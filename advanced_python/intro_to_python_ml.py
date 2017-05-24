@@ -57,6 +57,11 @@ np.array([1,2,3,4,5])
 
 # In[*]
 
+np.ones(5).tolist()
+
+
+# In[*]
+
 np.array([1.0,2,3,4,5])
 
 
@@ -108,7 +113,17 @@ x[-1]
 x[[0,2,4]]
 
 
-# __Exercise__: Write an expression that will get the antepenultimate and final elements of any array. (The antepenultimate element is 3 places back from the start. For our `x` above, you should get back `np.array([30, 50])`, but make sure your code would work for any `np.array` with at least three elements.)
+# In[*]
+
+x[[-1]]
+
+
+# In[*]
+
+x[-1:]
+
+
+# __Exercise__: Write an expression that will get the antepenultimate and final elements of any array. (The antepenultimate element is 3 places back from the end. For our `x` above, you should get back `np.array([30, 50])`, but make sure your code would work for any `np.array` with at least three elements.)
 
 # ## Vector assignment
 
@@ -142,11 +157,6 @@ x2
 
 # In[*]
 
-x.max()
-
-
-# In[*]
-
 x.sum()
 
 
@@ -157,17 +167,22 @@ x.mean()
 
 # In[*]
 
+x.max()
+
+
+# In[*]
+
+x.argmax()
+
+
+# In[*]
+
 np.log(x)
 
 
 # In[*]
 
 np.exp(x)
-
-
-# In[*]
-
-x.argmax()
 
 
 # In[*]
@@ -197,7 +212,7 @@ def sigmoid(x):
     -------
     float or np.array
     """
-    
+    pass
 
 
 # In[*]
@@ -207,7 +222,7 @@ assert sigmoid(0) == 0.5
 
 # In[*]
 
-assert sigmoid(np.array([0.0])) == np.array([0.5])
+assert (sigmoid(np.array([0.0])) == np.array([0.5])).all()
 
 
 # ## Comparison with Python lists
@@ -227,12 +242,12 @@ samp = np.random.random_sample(int(1e7))+1
 
 # In[*]
 
-get_ipython().magic('time _ = np.log(samp)')
+get_ipython().magic(u'time _ = np.log(samp)')
 
 
 # In[*]
 
-get_ipython().magic('time _ = listlog(samp)')
+get_ipython().magic(u'time _ = listlog(samp)')
 
 
 # # Matrices
@@ -259,6 +274,11 @@ np.zeros((3,5))
 # In[*]
 
 np.ones((3,5))
+
+
+# In[*]
+
+np.identity(3)
 
 
 # In[*]
@@ -339,7 +359,7 @@ X2
 
 # In[*]
 
-z = np.array(range(1, 7))
+z = np.arange(1, 7)
 
 z
 
@@ -404,6 +424,11 @@ B.dot(A.T)
 
 # In[*]
 
+A.dot(A.T)
+
+
+# In[*]
+
 np.outer(B, B)
 
 
@@ -442,6 +467,11 @@ scipy.sparse.lil_matrix((1,2))
 # In[*]
 
 scipy.sparse.lil_matrix((1,2)).toarray()
+
+
+# In[*]
+
+scipy.sparse.lil_matrix([1,2]).toarray()
 
 
 # In[*]
@@ -565,6 +595,11 @@ boston = load_boston()
 X_boston = boston['data']
 
 X_boston
+
+
+# In[*]
+
+boston['feature_names']
 
 
 # In[*]
@@ -719,7 +754,21 @@ from sklearn.metrics import classification_report
 
 # In[*]
 
-print(classification_report(y_iris_test, iris_predictions))
+fnames_iris = iris['feature_names']
+
+fnames_iris
+
+
+# In[*]
+
+tnames_iris = iris['target_names']
+
+tnames_iris
+
+
+# In[*]
+
+print(classification_report(y_iris_test, iris_predictions, target_names=tnames_iris))
 
 
 # The model coefficients (weights) are an array $c \times p$, where $c$ is the number of classes and $p$ is the number of features.
@@ -731,14 +780,12 @@ maxent.coef_
 
 # In[*]
 
-maxent.classes_
+maxent.intercept_
 
 
 # In[*]
 
-fnames_iris = iris['feature_names']
-
-fnames_iris
+maxent.classes_
 
 
 # In[*]
@@ -748,7 +795,7 @@ fnames_iris
 features = {}
 
 for fname, coefs in zip(fnames_iris, maxent.coef_.T):
-    features[fname] = dict(zip(maxent.classes_, coefs))
+    features[fname] = dict(zip(tnames_iris, coefs))
     
 features
 
@@ -800,7 +847,7 @@ dict(zip(boston['feature_names'], ols.coef_))
 
 # __Exercise__: Use `iter_splits` above on the `iris` dataset to evaluate a [Support Vector Classifier](http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC) with 5-fold cross-validation. For each of the evaluations, use [metrics.f1_score](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html#sklearn.metrics.f1_score), store that value in a list, and report the mean with `np.mean`.
 # 
-# Important you'll have to use `f1_score(y_test, predictions, average='macro')` since this is a multiclass problem. (`'micro'` is also allowed.)
+# Important: you'll have to use `f1_score(y_test, predictions, average='macro')` since this is a multiclass problem. (`'micro'` is also allowed.)
 
 # In[*]
 
@@ -849,6 +896,11 @@ cv = GridSearchCV(
 cv.fit(X_iris_train, y_iris_train)
 
 cv.best_estimator_
+
+
+# In[*]
+
+cv.predict(X_iris_test)
 
 
 # If the space of hyperparmeters is very large, it will be impractical to search the entire space. Taking random samples of the settings is known to be effective. See [RandomizedSearchCV](http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html#sklearn.model_selection.RandomizedSearchCV).
@@ -957,6 +1009,11 @@ def cheese_disease_test_iterator(
     return _cheese_disease_iterator(filename)    
 
 
+# In[*]
+
+list(cheese_disease_test_iterator())[-5:]
+
+
 # ## Featurize examples
 
 # In[*]
@@ -975,7 +1032,7 @@ def featurize(s):
         The keys are feature names, and the values are the feature 
         values -- int, float, or bool.    
     """
-    
+    return {}
 
 
 # ## Use the featurizer on the training data
